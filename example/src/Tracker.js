@@ -1,5 +1,7 @@
 import React from "react";
-import firebaseTracker, { parameterConfig } from "./tracker_modules/firebase";
+import firebaseTracker, {
+  firebaseParameterConfig
+} from "./tracker_modules/firebase";
 
 function generateParameterBaseOnDatafeeder(
   dataFeeder,
@@ -23,25 +25,27 @@ function generateParameterBaseOnDatafeeder(
   return Object.assign(combinedParameter, validParameter);
 }
 
-function execTrackerBaseOnDataFeeder(trackerFunc) {
-  return dataFeeder => {
-    const parameterToParse = Object.keys(parameterConfig).reduce(
-      (combinedParameter, parameterKey) =>
-        generateParameterBaseOnDatafeeder(
-          dataFeeder,
-          parameterKey,
-          combinedParameter,
-          parameterConfig
-        ),
-      {}
-    );
-    return trackerFunc(parameterToParse);
+function execTrackerBaseOnDataFeeder(parameterConfig) {
+  return trackerFunc => {
+    return dataFeeder => {
+      const parameterToParse = Object.keys(parameterConfig).reduce(
+        (combinedParameter, parameterKey) =>
+          generateParameterBaseOnDatafeeder(
+            dataFeeder,
+            parameterKey,
+            combinedParameter,
+            parameterConfig
+          ),
+        {}
+      );
+      return trackerFunc(parameterToParse);
+    };
   };
 }
 
 function onClickTracker({
   dataFeeder = { eventName: "click_action" },
-  trackerProvider = [firebaseTracker]
+  trackerProvider = [firebaseTracker(firebaseParameterConfig)]
 }) {
   return trackerProvider.reduce(
     (prev, cur) => prev(cur)(dataFeeder),

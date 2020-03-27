@@ -1,4 +1,4 @@
-import parameterConfig from "./config";
+import firebaseParameterConfig from "./config";
 
 const eventLogger = ({ eventName, eventParams }) => {
   console.log(
@@ -8,6 +8,5 @@ const eventLogger = ({ eventName, eventParams }) => {
   );
 };
 
-// const parameterConfig = [eventName, eventParams];
-export { parameterConfig };
+export { firebaseParameterConfig };
 export default eventLogger;
