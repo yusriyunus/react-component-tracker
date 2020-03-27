@@ -6,13 +6,10 @@ import amplitudeTracker, {
   amplitudeParameterConfig
 } from "./tracker_modules/amplitude";
 
-function generateParameterBaseOnDatafeeder(
-  dataFeeder,
-  parameterKey,
-  combinedParameter,
-  parameterConfig
-) {
-  const validParameter = Object.keys(dataFeeder).reduce((argsToParse, list) => {
+const compose = (...fns) => x => fns.reduceRight((v, f) => f(v), x);
+
+function generateValidParameter(dataFeeder, parameterConfig, parameterKey) {
+  return Object.keys(dataFeeder).reduce((argsToParse, list) => {
     if (parameterConfig[list]) {
       argsToParse[list] = dataFeeder[list];
     } else if (parameterConfig[parameterKey][list]) {
@@ -25,21 +22,21 @@ function generateParameterBaseOnDatafeeder(
     }
     return argsToParse;
   }, {});
-  return Object.assign(combinedParameter, validParameter);
 }
 
-function execTrackerBaseOnDataFeeder(trackerFunc, parameterConfig, dataFeeder) {
-  const parameterToParse = Object.keys(parameterConfig).reduce(
-    (combinedParameter, parameterKey) =>
-      generateParameterBaseOnDatafeeder(
+function generateParameterBaseOnDatafeeder({ dataFeeder, parameterConfig }) {
+  return Object.keys(parameterConfig).reduce(
+    (combinedParameter, parameterKey) => {
+      const validParameter = generateValidParameter(
         dataFeeder,
-        parameterKey,
-        combinedParameter,
-        parameterConfig
-      ),
+        parameterConfig,
+        parameterKey
+      );
+
+      return Object.assign(combinedParameter, validParameter);
+    },
     {}
   );
-  return trackerFunc(parameterToParse);
 }
 
 function onClickTracker({
@@ -49,8 +46,12 @@ function onClickTracker({
     { tracker: amplitudeTracker, parameter: amplitudeParameterConfig }
   ]
 }) {
-  trackerProvider.forEach(({ tracker, parameter }) =>
-    execTrackerBaseOnDataFeeder(tracker, parameter, dataFeeder)
+  trackerProvider.forEach(
+    ({ tracker: execTrackerFunc, parameter: parameterConfig }) =>
+      compose(
+        execTrackerFunc,
+        generateParameterBaseOnDatafeeder
+      )({ dataFeeder, parameterConfig })
   );
 }
 
