@@ -1,23 +1,13 @@
-import { eventName, eventParams } from "./config";
+import parameterConfig from "./config";
 
-const eventLogger = ({
-  eventName,
-  trigger,
-  action,
-  data,
-  context,
-  element,
-  url
-}) => {
-  const eventParamsToParse = { trigger, action, data, context, element, url };
+const eventLogger = ({ eventName, eventParams }) => {
   console.log(
     `Firebase track event with parameter ${eventName},${JSON.stringify({
-      eventParams: eventParamsToParse
+      eventParams
     })}`
   );
 };
 
-const parameterConfig = [eventName, eventParams];
-
+// const parameterConfig = [eventName, eventParams];
 export { parameterConfig };
 export default eventLogger;
