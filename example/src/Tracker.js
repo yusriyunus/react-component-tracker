@@ -2,6 +2,9 @@ import React from "react";
 import firebaseTracker, {
   firebaseParameterConfig
 } from "./tracker_modules/firebase";
+import amplitudeTracker, {
+  amplitudeParameterConfig
+} from "./tracker_modules/amplitude";
 
 function generateParameterBaseOnDatafeeder(
   dataFeeder,
@@ -25,8 +28,8 @@ function generateParameterBaseOnDatafeeder(
   return Object.assign(combinedParameter, validParameter);
 }
 
-function execTrackerBaseOnDataFeeder(parameterConfig) {
-  return trackerFunc => {
+function execTrackerBaseOnDataFeeder(trackerFunc) {
+  return parameterConfig => {
     return dataFeeder => {
       const parameterToParse = Object.keys(parameterConfig).reduce(
         (combinedParameter, parameterKey) =>
@@ -45,11 +48,13 @@ function execTrackerBaseOnDataFeeder(parameterConfig) {
 
 function onClickTracker({
   dataFeeder = { eventName: "click_action" },
-  trackerProvider = [firebaseTracker(firebaseParameterConfig)]
+  trackerProvider = [
+    firebaseTracker(firebaseParameterConfig),
+    amplitudeTracker(amplitudeParameterConfig)
+  ]
 }) {
-  return trackerProvider.reduce(
-    (prev, cur) => prev(cur)(dataFeeder),
-    execTrackerBaseOnDataFeeder
+  trackerProvider.forEach(tracker =>
+    execTrackerBaseOnDataFeeder(tracker)(dataFeeder)
   );
 }
 
