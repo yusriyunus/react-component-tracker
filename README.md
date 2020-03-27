@@ -2,29 +2,49 @@
 
 > use react component wrapper to track analyitc ui action
 
-[![NPM](https://img.shields.io/npm/v/react-component-tracker.svg)](https://www.npmjs.com/package/react-component-tracker) [![JavaScript Style Guide](https://img.shields.io/badge/code_style-standard-brightgreen.svg)](https://standardjs.com)
+## Development
 
-## Install
+Local development is broken into two parts (ideally using two tabs).
 
-```bash
-npm install --save react-component-tracker
-```
+First, run rollup to watch your src/ module and automatically recompile it into dist/ whenever you make changes.
 
-## Usage
+npm start # runs rollup with watch flag
 
-```jsx
-import React, { Component } from 'react'
+The second part will be running the example/ create-react-app that's linked to the local version of your module.
 
-import MyComponent from 'react-component-tracker'
+### (in another tab)
 
-class Example extends Component {
-  render () {
-    return (
-      <MyComponent />
-    )
-  }
-}
-```
+cd example
+
+npm start # runs create-react-app dev server
+
+Now, anytime you make a change to your library in src/ or to the example app's example/src, create-react-app will live-reload your local
+
+dev server so you can iterate on your component in real-time.
+
+## Tracker module
+
+Tracker module configuration is inside example/src/tracker_modules
+
+### Step to add tracker provider
+
+- Add folder inside example/src/tracker_modules with tracker provider name
+
+- Add index.js and config.js inside that new folder
+
+- Define how to call tracker function in index.js
+
+- Define function parameter insinde config.js
+
+### Step to use tracker provider
+
+- Add data feeder as paramter Tracker Component in example/src/App.js base on defined config tracker parameter function before
+
+- Run the app
+
+- Click component showed on screen
+
+- Tracker will logged on terminal
 
 ## License
 
