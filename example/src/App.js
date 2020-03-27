@@ -12,8 +12,8 @@ export default class App extends Component {
       data: "test",
       context: "test",
       element: "test",
-      url: "test",
-      amplitude: "amplitude"
+      // url: "test",
+      amplitude: "amplitudes"
     };
     return (
       <Tracker dataFeeder={dataFeeder}>

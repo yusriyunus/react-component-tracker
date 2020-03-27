@@ -28,33 +28,29 @@ function generateParameterBaseOnDatafeeder(
   return Object.assign(combinedParameter, validParameter);
 }
 
-function execTrackerBaseOnDataFeeder(trackerFunc) {
-  return parameterConfig => {
-    return dataFeeder => {
-      const parameterToParse = Object.keys(parameterConfig).reduce(
-        (combinedParameter, parameterKey) =>
-          generateParameterBaseOnDatafeeder(
-            dataFeeder,
-            parameterKey,
-            combinedParameter,
-            parameterConfig
-          ),
-        {}
-      );
-      return trackerFunc(parameterToParse);
-    };
-  };
+function execTrackerBaseOnDataFeeder(trackerFunc, parameterConfig, dataFeeder) {
+  const parameterToParse = Object.keys(parameterConfig).reduce(
+    (combinedParameter, parameterKey) =>
+      generateParameterBaseOnDatafeeder(
+        dataFeeder,
+        parameterKey,
+        combinedParameter,
+        parameterConfig
+      ),
+    {}
+  );
+  return trackerFunc(parameterToParse);
 }
 
 function onClickTracker({
   dataFeeder = { eventName: "click_action" },
   trackerProvider = [
-    firebaseTracker(firebaseParameterConfig),
-    amplitudeTracker(amplitudeParameterConfig)
+    { tracker: firebaseTracker, parameter: firebaseParameterConfig },
+    { tracker: amplitudeTracker, parameter: amplitudeParameterConfig }
   ]
 }) {
-  trackerProvider.forEach(tracker =>
-    execTrackerBaseOnDataFeeder(tracker)(dataFeeder)
+  trackerProvider.forEach(({ tracker, parameter }) =>
+    execTrackerBaseOnDataFeeder(tracker, parameter, dataFeeder)
   );
 }
 
