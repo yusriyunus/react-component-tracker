@@ -3,15 +3,21 @@ import firebaseTracker, { parameterConfig } from "./tracker_modules/firebase";
 
 function generateParameterBaseOnDatafeeder(
   dataFeeder,
-  parameter,
-  combinedParameter
+  parameterKey,
+  combinedParameter,
+  parameterConfig
 ) {
-  const validParameter = parameter.reduce((argsToParse, arg) => {
-    Object.keys(dataFeeder).forEach(list => {
-      if (arg[list]) {
-        argsToParse[list] = dataFeeder[list];
-      }
-    });
+  const validParameter = Object.keys(dataFeeder).reduce((argsToParse, list) => {
+    if (parameterConfig[list]) {
+      argsToParse[list] = dataFeeder[list];
+    } else if (parameterConfig[parameterKey][list]) {
+      const storage = argsToParse[parameterKey]
+        ? argsToParse[parameterKey]
+        : {};
+      argsToParse[parameterKey] = Object.assign(storage, {
+        [list]: dataFeeder[list]
+      });
+    }
     return argsToParse;
   }, {});
   return Object.assign(combinedParameter, validParameter);
@@ -19,8 +25,14 @@ function generateParameterBaseOnDatafeeder(
 
 function execTrackerBaseOnDataFeeder(trackerFunc) {
   return dataFeeder => {
-    const parameterToParse = parameterConfig.reduce(
-      (prev, cur) => generateParameterBaseOnDatafeeder(dataFeeder, cur, prev),
+    const parameterToParse = Object.keys(parameterConfig).reduce(
+      (prev, cur) =>
+        generateParameterBaseOnDatafeeder(
+          dataFeeder,
+          cur,
+          prev,
+          parameterConfig
+        ),
       {}
     );
     return trackerFunc(parameterToParse);
