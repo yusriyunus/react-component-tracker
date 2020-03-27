@@ -26,11 +26,11 @@ function generateParameterBaseOnDatafeeder(
 function execTrackerBaseOnDataFeeder(trackerFunc) {
   return dataFeeder => {
     const parameterToParse = Object.keys(parameterConfig).reduce(
-      (prev, cur) =>
+      (combinedParameter, parameterKey) =>
         generateParameterBaseOnDatafeeder(
           dataFeeder,
-          cur,
-          prev,
+          parameterKey,
+          combinedParameter,
           parameterConfig
         ),
       {}
