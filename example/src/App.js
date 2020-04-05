@@ -1,7 +1,5 @@
 import React, { Component } from "react";
-
-import ExampleComponent from "react-component-tracker";
-import Tracker from "./Tracker";
+import Tracker from "react-component-tracker";
 
 export default class App extends Component {
   render() {
@@ -13,11 +11,26 @@ export default class App extends Component {
       context: "test",
       element: "test",
       // url: "test",
-      amplitude: "amplitudes"
+      amplitude: "amplitudes",
     };
     return (
       <Tracker dataFeeder={dataFeeder}>
-        <ExampleComponent text="Modern React component module" />
+        <div
+          style={{
+            width: "100vw",
+            height: "100vh",
+            display: "flex",
+          }}
+        >
+          <h1
+            style={{
+              cursor: "pointer",
+              margin: "auto",
+            }}
+          >
+            CLICK THIS TO TRIGGER ACTION LOGGER
+          </h1>
+        </div>
       </Tracker>
     );
   }
