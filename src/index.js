@@ -1,12 +1,13 @@
 import React from "react";
-import firebaseTracker, {
-  firebaseParameterConfig
-} from "./tracker_modules/firebase";
-import amplitudeTracker, {
-  amplitudeParameterConfig
-} from "./tracker_modules/amplitude";
+const compose = (...fns) => (x) => fns.reduceRight((v, f) => f(v), x);
+let trackerProviderList = [];
 
-const compose = (...fns) => x => fns.reduceRight((v, f) => f(v), x);
+function setTrackerProviderFeeder(trackerList = []) {
+  return trackerList.reduce((storage, { tracker, parameter }) => {
+    if (tracker && parameter) storage.push({ tracker, parameter });
+    return storage;
+  }, trackerProviderList);
+}
 
 function generateValidParameter(dataFeeder, parameterConfig, parameterKey) {
   return Object.keys(dataFeeder).reduce((argsToParse, list) => {
@@ -17,7 +18,7 @@ function generateValidParameter(dataFeeder, parameterConfig, parameterKey) {
         ? argsToParse[parameterKey]
         : {};
       argsToParse[parameterKey] = Object.assign(storage, {
-        [list]: dataFeeder[list]
+        [list]: dataFeeder[list],
       });
     }
     return argsToParse;
@@ -41,10 +42,7 @@ function generateParameterBaseOnDatafeeder({ dataFeeder, parameterConfig }) {
 
 function onClickTracker({
   dataFeeder = { eventName: "click_action" },
-  trackerProvider = [
-    { tracker: firebaseTracker, parameter: firebaseParameterConfig },
-    { tracker: amplitudeTracker, parameter: amplitudeParameterConfig }
-  ]
+  trackerProvider = trackerProviderList,
 }) {
   trackerProvider.forEach(
     ({ tracker: execTrackerFunc, parameter: parameterConfig }) =>
@@ -63,4 +61,5 @@ function Tracker({ children, dataFeeder, trackerProvider }) {
   );
 }
 
+export { setTrackerProviderFeeder };
 export default Tracker;
